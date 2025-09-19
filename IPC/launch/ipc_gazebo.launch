@@ -15,7 +15,7 @@
         <remap from="sfc"          to="/ipc/sfc"/>
         
         <!-- subscribe topic -->
-        <remap from="odom"         to="/mavros/global/odom"/>
+        <remap from="odom"         to="/mavros/uav_odom"/>
         <remap from="imu"          to="/mavros/imu/data"/>
         <remap from="imu_raw"      to="/mavros/imu/data_raw"/>
         <remap from="battery"      to="/mavros/battery"/>

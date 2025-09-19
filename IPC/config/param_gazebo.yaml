@@ -40,6 +40,84 @@ astar:
   expand_fix:    0.3
   update_dt:     5.0
 
+
+rog_map:
+  resolution: 0.15
+  inflation_resolution: 0.15
+  inflation_step: 5
+  unk_inflation_en: true
+  unk_inflation_step: 3
+  map_size: [8,8,4]
+
+  # Virtual ceil and ground
+  virtual_ceil_height: 999
+  virtual_ground_height: -999
+
+  block_inf_pt: false
+  kd_tree_en: false
+  safe_margin: 0.0
+  load_pcd_en: false
+  map_sliding:
+    enable: true
+    # The minimum distance [m] to slide the map.
+    threshold: 0.1
+
+  # If the map rolling is disable, the map origin [m] should be set.
+  fix_map_origin: [ 0,0,0 ]
+
+  frontier_extraction_en: false
+
+  # If [enbale = true], the ROG-Map will actively take ros topic as input.
+  #  else user should call function [updateMap] to update the map.
+  ros_callback:
+    enable: false
+    cloud_topic: "/cloud_registered"
+    odom_topic: "/lidar_slam/odom"
+    odom_timeout: 2.0
+
+  visulization:
+    enbale: true
+    # The rate of visualization [Hz], if set to 0, the visualization will not be triggered by frame.
+    time_rate: 10
+    # The frame rate of visualization [Hz], if set to 0, the visualization will not be triggered by frame.
+    frame_rate: 0
+    # visualization range along the odom [m].
+    range: [ 6,6,2 ]
+    frame_id: "world"
+    pub_unknown_map_en: true
+
+  # Intensity filter for input point cloud. If the point intensity is less than this value,
+  # it will be ignored (to avoid noise like dusk).
+  intensity_thresh: -1
+  # The temporal downsample rate for input point cloud.
+  #  e.g. if set to k, the point cloud will be downsampled to 1/k.
+  point_filt_num: 2
+
+  # Probabilistc update
+  raycasting:
+    # if disable, the map will only maintain occupied information, and all other grid
+    # will be considered as unknown.
+    enable: true
+    # Add 11.15, filter the blind area
+    blind_filter_en: false
+    blind_filter_dis: 1.0
+    batch_update_size: 1
+    local_update_box: [5,5,5]
+    # The range of raycasting [m].
+    ray_range: [0.1, 5]
+
+    p_min: 0.12
+    p_miss: 0.3
+    p_free: 0.45
+    p_occ: 0.6
+    p_hit: 0.8
+    p_max: 0.95
+    # The threshold of a non-occupied inf map grid to be considered as free. [0.0-1.0]
+    # which means for a gird contains [u] unknown grids and [f] known free grids.
+    # if [f/(f+u) > inf_map_known_free_thresh], the grid will be considered as free.
+    #  e.g. this thresh is set to 1.0, it measn a inf map grid is considered as free only if all grids in it are known free.
+    inf_map_known_free_thresh: 1.0
+
 mpc:
   horizon:       15
   step:          0.1

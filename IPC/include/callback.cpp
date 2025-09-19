@@ -60,10 +60,10 @@ void CallbackClass::GoalCallback(const geometry_msgs::PoseStampedConstPtr& msg)
     goal_time_ = msg->header.stamp;
     Eigen::Vector3d goal;
     goal << msg->pose.position.x, msg->pose.position.y, msg->pose.position.z;
-    if ((goal - odom_p_).norm() > 0.1) {
-        new_goal_flag_ = true;
-        user_goal_ = goal;
-    }
+    // if ((goal - odom_p_).norm() > 0.1) {
+    //     new_goal_flag_ = true;
+    //     user_goal_ = goal;
+    // }
     goal_mutex_.unlock();
 }
 
