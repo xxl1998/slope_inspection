@@ -33,6 +33,13 @@ target_link_libraries(BT_x1_node
   ${catkin_LIBRARIES}
 )
 
+add_executable(joy_node
+  src/joy_node.cpp
+)
+target_link_libraries(joy_node
+  ${catkin_LIBRARIES}
+)
+
 add_executable(car_ctrl_node
   src/car_ctrl.cpp
 )

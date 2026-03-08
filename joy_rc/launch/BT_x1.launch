@@ -1,8 +1,12 @@
 <launch>
-    <node pkg="joy" type="joy_node" name="joy_node" output="screen"/>
+    <node pkg="joy_rc" type="joy_node" name="joy_node" output="screen">
+        <param name="dev" value="/dev/input/js0"/>
+        <param name="publish_rate" value="100.0"/>
+    </node>
 
     <node pkg="joy_rc" type="BT_x1_node" name="BT_x1_node" output="screen">
-        
+        <param name="main_channel_reverse" value="true"/>
+
         <remap from="joy"          to="/joy"/>
         <remap from="rc"           to="/mavros/rc/in"/>
     </node>
