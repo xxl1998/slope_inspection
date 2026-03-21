@@ -18,6 +18,7 @@
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/CommandLong.h>
 #include <mavros_msgs/AttitudeTarget.h>
+#include <jsk_rviz_plugins/OverlayText.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 
@@ -68,6 +69,8 @@ public:
         mpc_path_pub_ = nh.advertise<nav_msgs::Path>("mpc_path", 1);
         goal_pub_     = nh.advertise<geometry_msgs::PoseStamped>("goal_pub", 1);
         sfc_pub_      = nh.advertise<visualization_msgs::MarkerArray>("sfc", 1);
+        rc_mode_vis_pub_ = nh.advertise<jsk_rviz_plugins::OverlayText>("rc_mode_overlay", 1);
+        rc_channel_vis_pub_ = nh.advertise<jsk_rviz_plugins::OverlayText>("rc_channel_overlay", 1);
 
         odom_sub_     = nh.subscribe<nav_msgs::Odometry>("odom", 10, &CallbackClass::OdomCallback, this, ros::TransportHints().tcpNoDelay());
         imu_sub_      = nh.subscribe<sensor_msgs::Imu>("imu", 10, &CallbackClass::IMUCallback, this, ros::TransportHints().tcpNoDelay());
@@ -202,6 +205,8 @@ private:
     void IMURawCallback(const sensor_msgs::ImuConstPtr& msg);
     void GoalCallback(const geometry_msgs::PoseStampedConstPtr& msg);
     void RCCallback(const mavros_msgs::RCInConstPtr& msg);
+    void RCVisualization(const mavros_msgs::RCIn& msg);
+    std::string UAVModeToString(UAV_mode_e mode) const;
     void BatteryCallback(const sensor_msgs::BatteryStateConstPtr& msg) {
         battery_mutex_.lock();
         uav_battery_ = *msg;
@@ -225,6 +230,7 @@ private:
 
     
     ros::Publisher     pvaj_cmd_pub_, px4_cmd_pub_, astar_pub_, ogm_pub_, mpc_path_pub_, goal_pub_;
+    ros::Publisher     rc_mode_vis_pub_, rc_channel_vis_pub_;
     ros::Subscriber    odom_sub_, imu_sub_, imu_raw_sub_, battery_sub_, goal_sub_, rc_sub_, state_sub_;
     ros::ServiceClient reboot_srv_, arm_srv_, mode_srv_;
     ros::Time          init_time_, odom_time_, imu_time_, goal_time_, rc_time_;

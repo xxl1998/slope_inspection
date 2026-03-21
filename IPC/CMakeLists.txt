@@ -10,6 +10,7 @@ find_package(PCL REQUIRED)
 find_package(OsqpEigen REQUIRED)
 
 find_package(catkin REQUIRED COMPONENTS
+  jsk_rviz_plugins
   roscpp
   geometry_msgs
   nav_msgs

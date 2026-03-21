@@ -1,6 +1,68 @@
 #include "callback.h"
+#include <sstream>
 
 namespace ipc {
+
+std::string CallbackClass::UAVModeToString(UAV_mode_e mode) const {
+    switch (mode) {
+      case UAV_Manual:
+        return "Manual";
+      case UAV_Hover:
+        return "Hover";
+      case UAV_Pilot:
+        return "Pilot";
+      case UAV_AutoPilot:
+        return "AutoPilot";
+      default:
+        return "Unknown";
+    }
+}
+  
+void CallbackClass::RCVisualization(const mavros_msgs::RCIn& msg) {
+    jsk_rviz_plugins::OverlayText mode_text;
+    mode_text.width = 320;
+    mode_text.height = 60;
+    mode_text.left = 10;
+    mode_text.top = 10;
+    mode_text.text_size = 18;
+    mode_text.line_width = 2;
+    mode_text.font = "DejaVu Sans Mono";
+    mode_text.fg_color.r = 1.0;
+    mode_text.fg_color.g = 1.0;
+    mode_text.fg_color.b = 1.0;
+    mode_text.fg_color.a = 1.0;
+    mode_text.bg_color.r = 0.05;
+    mode_text.bg_color.g = 0.05;
+    mode_text.bg_color.b = 0.05;
+    mode_text.bg_color.a = 0.7;
+    mode_text.text = UAVModeToString(mode_);
+    rc_mode_vis_pub_.publish(mode_text);
+  
+    std::ostringstream rc_stream;
+    for (size_t i = 0; i < msg.channels.size(); ++i) {
+      rc_stream << "Ch" << i + 1 << ": "
+                << static_cast<unsigned int>(msg.channels[i]) << "\n";
+    }
+  
+    jsk_rviz_plugins::OverlayText channel_text;
+    channel_text.width = 200;
+    channel_text.height = 32 * static_cast<int>(msg.channels.size());
+    channel_text.left = 10;
+    channel_text.top = 80;
+    channel_text.text_size = 10;
+    channel_text.line_width = 2;
+    channel_text.font = "DejaVu Sans Mono";
+    channel_text.fg_color.r = 0.9;
+    channel_text.fg_color.g = 0.95;
+    channel_text.fg_color.b = 1.0;
+    channel_text.fg_color.a = 1.0;
+    channel_text.bg_color.r = 0.05;
+    channel_text.bg_color.g = 0.05;
+    channel_text.bg_color.b = 0.05;
+    channel_text.bg_color.a = 0.7;
+    channel_text.text = rc_stream.str();
+    rc_channel_vis_pub_.publish(channel_text);
+}
 
 void CallbackClass::OdomCallback(const nav_msgs::OdometryConstPtr& msg)
 {
@@ -109,7 +171,7 @@ void CallbackClass::RCCallback(const mavros_msgs::RCInConstPtr& msg)
         yaw_r_ = yaw_;
         GoalPublish(user_goal_, yaw_);
     }
-    if (msg->channels[4] > 1600 && msg_last.channels[5] < 1500 && msg->channels[5] > 1500 && msg->channels[6] < 1500 && std::abs(msg->channels[2] - 1500) < 80 && mode_ == UAV_Hover) {
+    if (msg->channels[4] > 1600 && msg_last.channels[5] <= 1500 && msg->channels[5] > 1500 && msg->channels[6] < 1500 && std::abs(msg->channels[2] - 1500) < 80 && mode_ == UAV_Hover) {
         ROS_INFO("\033[1;34m[IPC FSM]: Hover --> Pilot.\033[0m");
         mode_ = UAV_Pilot;
         user_goal_ = odom_p_;
@@ -163,6 +225,7 @@ void CallbackClass::RCCallback(const mavros_msgs::RCInConstPtr& msg)
     }
 
     msg_last = *msg;
+    RCVisualization(*msg);
     rc_mutex_.unlock();
 }
 
