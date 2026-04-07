@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>so3_quadrotor_sim</name>
+  <version>0.0.0</version>
+  <description>The so3_quadrotor simulator package</description>
+
+  <maintainer email="50321124+xxl1998@users.noreply.github.com">xxl1998</maintainer>
+
+  <license>GPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>quadrotor_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>tf</depend>
+
+</package>
